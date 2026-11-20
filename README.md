@@ -6,6 +6,25 @@ Katsura 구성 요소의 배포용 Helm 차트를 모아 둔다. 각 차트는 `
 | --- | --- |
 | [katsura-agent](charts/katsura-agent/) | Linux 노드의 LLDP 이웃을 수집하는 DaemonSet |
 
+## Helm 저장소 등록 및 설치
+
+GitHub Pages에 차트가 게시된 후 사용할 수 있다. Git 저장소를 복제할 필요는 없다.
+
+```sh
+helm repo add katsura https://belltigerlee.github.io/katsura-tree
+helm repo update katsura
+helm search repo katsura/katsura-agent --versions
+```
+
+다음 명령은 현재 Kubernetes 컨텍스트의 `katsura-system` 네임스페이스에 에이전트를 설치한다. 같은 이름의 릴리스가 이미 있으면 지정한 버전으로 업데이트한다.
+
+```sh
+helm upgrade --install katsura-agent katsura/katsura-agent \
+  --version 0.1.0 --namespace katsura-system --create-namespace
+```
+
+클러스터에 설치하지 않고 차트만 내려받으려면 `helm pull katsura/katsura-agent --version 0.1.0`을 실행한다.
+
 ## 차트 검증
 
 저장소 루트에서 실행한다. 클러스터를 변경하지 않는다.
