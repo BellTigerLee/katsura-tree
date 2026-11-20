@@ -1,0 +1,75 @@
+# Both containers run from this single image.
+image:
+  repository: ghcr.io/belltigerlee/katsura-agent
+  tag: "lldp-1.0.23"
+  pullPolicy: IfNotPresent
+imagePullSecrets: []
+
+# [] or {} = no label filter. To restrict placement, replace [] with a map:
+# nodeSelector:
+#   kubernetes.io/os: linux
+#   kubernetes.io/arch: amd64
+nodeSelector: []
+tolerations: []
+affinity: {}
+priorityClassName: ""
+updateStrategy: {}
+podAnnotations: {}
+
+# false observes the Pod network namespace instead of host interfaces.
+hostNetwork: true
+hostPID: false
+hostIPC: false
+dnsPolicy: ""  # auto: ClusterFirstWithHostNet or ClusterFirst
+dnsConfig: {}
+serviceAccountName: ""
+automountServiceAccountToken: false
+terminationGracePeriodSeconds: 15
+
+podSecurityContext:
+  fsGroup: 10001
+  seccompProfile:
+    type: RuntimeDefault
+
+# Exact NIC for both containers; empty = discover en* each round.
+interfaceName: ""
+controlVolume:
+  medium: Memory
+  sizeLimit: 16Mi
+
+lldpd:
+  securityContext:
+    runAsUser: 0
+    runAsGroup: 10001
+    readOnlyRootFilesystem: true
+    privileged: false
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop: ["ALL"]
+      add: ["NET_RAW", "CHOWN", "FOWNER", "SETUID", "SETGID", "SYS_CHROOT", "KILL"]
+  resources: null  # null = inherit top-level resources
+
+collector:
+  interval: 10s
+  timeout: 5s
+  verbose: false
+  lldpcli: "lldpcli"
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 10002
+    runAsGroup: 10001
+    readOnlyRootFilesystem: true
+    privileged: false
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop: ["ALL"]
+  resources: null
+
+# Per-container requests and limits (applied independently to both).
+resources:
+  requests:
+    cpu: 20m
+    memory: 32Mi
+  limits:
+    cpu: 200m
+    memory: 128Mi
