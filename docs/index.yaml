@@ -1,0 +1,16 @@
+apiVersion: v1
+entries:
+  katsura-agent:
+  - apiVersion: v2
+    appVersion: lldp-1.0.23
+    created: "2026-11-20T16:32:17.433969115Z"
+    description: Receive-only LLDP node collector for Kubernetes
+    digest: e958bb4eb32bae11d20ef5090d1bad5fd99430a66da1072c6f8a8b3ec8b401a9
+    name: katsura-agent
+    sources:
+    - https://github.com/BellTigerLee/katsura-agent
+    type: application
+    urls:
+    - https://belltigerlee.github.io/katsura-tree/katsura-agent-0.1.0.tgz
+    version: 0.1.0
+generated: "2026-11-20T16:32:17.433415553Z"
