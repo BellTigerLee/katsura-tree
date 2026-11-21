@@ -1,8 +1,8 @@
 apiVersion: v2
 name: katsura-agent
-description: Receive-only LLDP node collector for Kubernetes
+description: On-demand node topology and hardware inventory with receive-only LLDP
 type: application
-version: 0.1.0
-appVersion: "lldp-1.0.23"
+version: 0.2.0
+appVersion: "0.2.0"
 sources:
   - https://github.com/BellTigerLee/katsura-agent

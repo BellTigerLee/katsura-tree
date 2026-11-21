@@ -1,7 +1,7 @@
 # Both containers run from this single image.
 image:
   repository: ghcr.io/belltigerlee/katsura-agent
-  tag: "lldp-1.0.23"
+  tag: ""  # Defaults to Chart.appVersion; override with --set-string image.tag=...
   pullPolicy: IfNotPresent
 imagePullSecrets: []
 
@@ -31,7 +31,7 @@ podSecurityContext:
   seccompProfile:
     type: RuntimeDefault
 
-# Exact NIC for both containers; empty = discover en* each round.
+# Empty: LLDP daemon listens on en*; gRPC sysfs/IP inventory includes all interfaces.
 interfaceName: ""
 controlVolume:
   medium: Memory
@@ -50,6 +50,9 @@ lldpd:
   resources: null  # null = inherit top-level resources
 
 collector:
+  mode: grpc  # grpc or poll-lldp
+  grpcListen: "127.0.0.1:9579"  # Plaintext: expose only on a protected network.
+  # interval and verbose are used only in poll-lldp mode.
   interval: 10s
   timeout: 5s
   verbose: false

@@ -1,5 +1,8 @@
 {{- $v := .Values -}}
-{{- $image := printf "%s:%s" $v.image.repository $v.image.tag -}}
+{{- $image := printf "%s:%s" $v.image.repository (default .Chart.AppVersion $v.image.tag) -}}
+{{- if not (has $v.collector.mode (list "grpc" "poll-lldp")) -}}
+  {{- fail "collector.mode must be grpc or poll-lldp" -}}
+{{- end -}}
 {{- $selector := $v.nodeSelector -}}
 {{- if not (or (kindIs "map" $selector) (and (kindIs "slice" $selector) (empty $selector)) (eq $selector nil)) -}}
   {{- fail "nodeSelector must be a label map or []" -}}
@@ -72,12 +75,18 @@ spec:
           args:
             - "-socket"
             - /run/lldpd/lldpd.socket
-            - "-interval"
-            - {{ $v.collector.interval | quote }}
             - "-timeout"
             - {{ $v.collector.timeout | quote }}
+            {{- if eq $v.collector.mode "grpc" }}
+            - "--grpc-listen"
+            - {{ required "collector.grpcListen is required in grpc mode" $v.collector.grpcListen | quote }}
+            {{- else }}
+            - "--poll-lldp"
+            - "-interval"
+            - {{ $v.collector.interval | quote }}
             - "--verbose"
             - {{ $v.collector.verbose | quote }}
+            {{- end }}
             {{- if ne $v.collector.lldpcli "lldpcli" }}
             - "-lldpcli"
             - {{ $v.collector.lldpcli | quote }}
